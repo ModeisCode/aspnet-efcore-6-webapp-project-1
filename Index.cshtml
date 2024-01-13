@@ -1,0 +1,67 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+
+}
+
+<main>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <input id="username" type="text" name="name"/>
+                <input id="userpoint" type="text" name="point"/>
+                <button type="button" onclick="addNewUserData()" class="btn btn-success">Add New User</button>
+            </div>
+        </div>
+    </div>
+
+    <table id="table" class="table text-bg-info">
+        <tr>
+            <td>Username</td>
+            <td>Point</td>
+        </tr>
+    </table>
+
+    @section scripts {
+    <script>
+
+        function addNewUserData() {
+            $.ajax({
+                type: "POST",
+                url: "/Home/AddNew",
+                data: { username: $("#username").val(), userpoint: parseInt($("#userpoint").val()) },
+                async: false,
+                success: function (data) {
+                    if (data === "success") {
+                        $("#table").append("<tr><th>" + $("#username").val() + "</th><th>" + $("#userpoint").val() +"</th></tr>");
+                    }
+                    else if (data === "error") {
+                        alert("error");
+                    }
+                    else {
+                        console.log("DATA:" + data);
+                    }
+                }
+            });
+        }
+
+        function getTableFromDatabase() {
+            $.ajax({
+                type: "POST",
+                url: "/Home/GetUsers",
+                async: false,
+                success: function (data) {
+                    for (var item of data) {
+                        $("#table").append("<tr>" + "<th>" + item.UserName + "</th>" + "<th>" + item.UserPoint + "</th>" + "</tr>");
+                    }
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            getTableFromDatabase();
+        });
+
+    </script>
+      }
+</main>
